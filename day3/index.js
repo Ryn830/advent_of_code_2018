@@ -41,18 +41,77 @@
   If the Elves all proceed with their own plans, none of them will have enough fabric. How many square inches of fabric are within two or more claims?
   */
 
-const data = require('./data')
-module.exports.p1 = function (squares) {
-  const fabric = new Array(10).fill(new Array(10).fill(0))
-  squares.forEach(coor => {
-    addRect(coor)
+module.exports.p1 = function (claims) {
+  let fabric = (new Array(1000).fill(null)).map(_ => {
+    return new Array(1000).fill(0)
   })
-  function addRect ([x, y, w, h]) {
-    for (let j = y; j < y + h; j++) {
-      for (let i = x; i < x + w; i++) {
+  // Apply claims to fabric
+  claims.forEach(claim => {
+    const [x, y, w, h] = claim
+    for (let j = y; j <= h + y - 1; j++) {
+      for (let i = x; i <= w + x - 1; i++) {
         fabric[j][i]++
       }
     }
-  }
-  console.log(fabric)
+  })
+  // Map reduce over fabric
+  let count = fabric.map(row => {
+    return row.reduce((multipleClaimed, fabricSquare) => {
+      if (fabricSquare > 1) multipleClaimed++
+      return multipleClaimed
+    }, 0)
+  }).reduce((total, rowCount) => {
+    return total + rowCount
+  }, 0)
+  console.log(count)
 }
+
+/**
+  --- Part Two ---
+  Amidst the chaos, you notice that exactly one claim doesn't overlap by even a single square inch of fabric with any other claim. If you can somehow draw attention to it, maybe the Elves will be able to make Santa's suit after all!
+
+  For example, in the claims above, only claim 3 is intact after all claims are made.
+
+  What is the ID of the only claim that doesn't overlap?
+ */
+
+module.exports.p2 = function (claims) {
+  let fabric = (new Array(1000).fill(null)).map(_ => {
+    return new Array(1000).fill([])
+  })
+  // Apply claims to fabric
+  claims.forEach((claim, index) => {
+    const [x, y, w, h] = claim
+    for (let j = y; j <= h + y - 1; j++) {
+      for (let i = x; i <= w + x - 1; i++) {
+        let claimNum = index + 1 // Correct for the offset
+        fabric[j][i] = fabric[j][i].concat(claimNum)
+      }
+    }
+  })
+  // Search through each square, if the square doens't have more than a single claim.
+  let oneClaimSquares = fabric.map(row => {
+    return row.reduce((multipleClaimed, fabricSquare) => {
+      if (fabricSquare.length === 1) multipleClaimed = multipleClaimed.concat(fabricSquare)
+      return multipleClaimed
+    }, [])
+  }).reduce((total, rowCount) => {
+    return total.concat(rowCount)
+  }, [])
+
+  // Create a map of claimNumbers to the areas
+  let areaOfOneClaimSquares = oneClaimSquares.reduce((count, claim) => {
+    count[claim] = count[claim] || 0
+    count[claim]++
+    return count
+  }, {})
+
+  // Calculate the expected area for the claim and see if the areas match
+  // Log the claim number that matches
+  Object.entries(areaOfOneClaimSquares).forEach(([claimNum, area]) => {
+    const [x, y, w, h] = claims[claimNum - 1] // Correct for index offset
+    if (area === (w * h)) {
+      console.log(claimNum)
+    }
+  })
+ }
