@@ -1,4 +1,4 @@
-const data = require('./day1_data')
+const data = require('./data')
 
 /**
  * Part 1

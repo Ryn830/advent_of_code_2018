@@ -14,7 +14,7 @@
   * What is the checksum for your list of box IDs?
   */
 
-const data = require('./day2_data')
+const data = require('./data')
 module.exports.part1 = function () {
   const [tot2, tot3] = data.map(id => {
     const filteredCounts = Object.values(countLetters(id))
