@@ -14,9 +14,9 @@
   * What is the checksum for your list of box IDs?
   */
 
-const ids = require('./day2_data')
+const data = require('./day2_data')
 module.exports.part1 = function () {
-  let [tot2, tot3] = ids.map(id => {
+  const [tot2, tot3] = data.map(id => {
     const filteredCounts = Object.values(countLetters(id))
       .filter(count => {
         return count > 1 && count < 4
@@ -37,8 +37,7 @@ module.exports.part1 = function () {
     all[1] += num3s
     return all
   }, [0, 0])
-
-  console.log(`Answer: ${tot2 * tot3}`)
+  console.log(tot2 * tot3)
 
   function countLetters (str) {
     return str.split('').reduce((counts, letter) => {
@@ -71,10 +70,24 @@ module.exports.part1 = function () {
   * The IDs abcde and axcye are close, but they differ by two characters (the second and fourth).
   * However, the IDs fghij and fguij differ by exactly one character, the third (h and u).
   * Those must be the correct boxes.
-  * What letters are common between the two correct box IDs? (In the example above, this is found
-  * by removing the differing character from either ID, producing fgij.)
+  * What letters are common between the two correct box IDs? (In the example above, this
+  * is found by removing the differing character from either ID, producing fgij.)
   */
 
-module.exports.part2 = function () {
-
+module.exports.part2 = function (ids) {
+  for (let i = 0; i < ids.length; i++) {
+    for (let j = i + 1; j < ids.length; j++) {
+      let current = ids[i]
+      let compare = ids[j]
+      let similarities = []
+      for (let k = 0; k < current.length; k++) {
+        if (current[k] === compare[k]) {
+          similarities.push(current[k])
+        }
+      }
+      if (similarities.length === current.length - 1) {
+        console.log(similarities.join(''))
+      }
+    }
+  }
 }
