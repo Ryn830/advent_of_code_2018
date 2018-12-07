@@ -49,7 +49,69 @@
 
   What is the ID of the guard you chose multiplied by the minute you chose? (In the above example, the answer would be 10 * 24 = 240.)
   */
+const events = require('./data')
 
-module.exports.p1 = function () {
-  return null
-}
+module.exports.p1 = (function (events) {
+  const guardRecords = events.reduce((index, event) => {
+    const guardChange = /\#(\d*)/.exec(event)
+    if (guardChange) {
+      index.guardOnDuty = guardChange[1]
+      return index
+    }
+    const guardAsleep = /:(\d*)]\sfalls asleep/.exec(event)
+    if (guardAsleep) {
+      const min = guardAsleep[1]
+      index.guardStartSleep = min
+      return index
+    }
+    const guardWakes = /:(\d*)]\swakes up/.exec(event)
+    if (guardWakes) {
+      const minGuardWakes = guardWakes[1]
+      // Record the minutes of the hour the guard was asleep
+      index[index.guardOnDuty] = index[index.guardOnDuty] || new Array(60).fill(0)
+      for (let i = index.guardStartSleep; i < minGuardWakes - 1; i++) {
+        index[index.guardOnDuty][i]++
+      }
+      return index
+    }
+  }, { guardOnDuty: null, guardStartSleep: null })
+
+  for (let id in guardRecords) {
+    // Filter non-guard keys
+    if (id === 'guardOnDuty' || id === 'guardStartSleep') {
+      delete guardRecords[id]
+      continue
+    }
+    // Sum guard minutes slept and find minute of hour slept most
+    guardRecords[id] = {
+      timeline: guardRecords[id],
+      mode: lastMax(guardRecords[id]),
+      total: guardRecords[id].reduce((sum, min) => sum + min),
+    }
+
+    function lastMax (array) {
+      const max = Math.max(...array)
+      const lastMaxIndex = array.reduce((lastMaxIndex, curr, index) => {
+        if (curr === max) return index
+        return lastMaxIndex
+      }, 0)
+      return lastMaxIndex
+    }
+  }
+
+  const guardSleptMostId = Object.keys(guardRecords).map(id => {
+    const { total } = guardRecords[id]
+    return { id, total }
+  }).reduce((most, guard) => {
+    if (!most) return guard.id
+    if (guard.total > guardRecords[most].total) return guard.id
+    return most
+  }, null)
+
+  // Correct for timeline minute offset
+  const minuteOfHour = guardRecords[guardSleptMostId].mode + 1
+  // Answer
+  console.log(minuteOfHour * parseInt(guardSleptMostId))
+})
+(events)
+
