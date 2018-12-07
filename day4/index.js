@@ -49,9 +49,9 @@
 
   What is the ID of the guard you chose multiplied by the minute you chose? (In the above example, the answer would be 10 * 24 = 240.)
   */
-const events = require('./data')
+const eventData = require('./data')
 
-module.exports.p1 = (function (events) {
+function createGuardRecords (events) {
   const guardRecords = events.reduce((index, event) => {
     const guardChange = /\#(\d*)/.exec(event)
     if (guardChange) {
@@ -60,13 +60,13 @@ module.exports.p1 = (function (events) {
     }
     const guardAsleep = /:(\d*)]\sfalls asleep/.exec(event)
     if (guardAsleep) {
-      const min = guardAsleep[1]
+      const min = parseInt(guardAsleep[1])
       index.guardStartSleep = min
       return index
     }
     const guardWakes = /:(\d*)]\swakes up/.exec(event)
     if (guardWakes) {
-      const minGuardWakes = guardWakes[1]
+      const minGuardWakes = parseInt(guardWakes[1])
       // Record the minutes of the hour the guard was asleep
       index[index.guardOnDuty] = index[index.guardOnDuty] || new Array(60).fill(0)
       for (let i = index.guardStartSleep; i < minGuardWakes - 1; i++) {
@@ -84,8 +84,10 @@ module.exports.p1 = (function (events) {
     }
     // Sum guard minutes slept and find minute of hour slept most
     guardRecords[id] = {
+      id,
       timeline: guardRecords[id],
-      mode: lastMax(guardRecords[id]),
+      minOfHourMostSlept: lastMax(guardRecords[id]),
+      mostTimesFallenAsleep: guardRecords[id][lastMax(guardRecords[id])],
       total: guardRecords[id].reduce((sum, min) => sum + min),
     }
 
@@ -99,6 +101,12 @@ module.exports.p1 = (function (events) {
     }
   }
 
+  return guardRecords
+}
+
+module.exports.p1 = (function (events) {
+  const guardRecords = createGuardRecords(events)
+
   const guardSleptMostId = Object.keys(guardRecords).map(id => {
     const { total } = guardRecords[id]
     return { id, total }
@@ -109,9 +117,32 @@ module.exports.p1 = (function (events) {
   }, null)
 
   // Correct for timeline minute offset
-  const minuteOfHour = guardRecords[guardSleptMostId].mode + 1
+  const minuteOfHour = guardRecords[guardSleptMostId].minOfHourMostSlept + 1
   // Answer
-  console.log(minuteOfHour * parseInt(guardSleptMostId))
-})
-(events)
+  console.log('Part 1:', minuteOfHour * parseInt(guardSleptMostId))
+})(eventData)
 
+/**
+  --- Part Two ---
+  Strategy 2: Of all guards, which guard is most frequently asleep on the same minute?
+
+  In the example above, Guard #99 spent minute 45 asleep more than any other guard or minute - three times in total. (In all other cases, any guard spent any minute asleep at most twice.)
+
+  What is the ID of the guard you chose multiplied by the minute you chose? (In the above example, the answer would be 99 * 45 = 4455.)
+  */
+
+module.exports.p2 = (function (events) {
+  const guardRecords = createGuardRecords(events)
+
+  // Guard that slept the the most times on a particular minute
+  const maxGuard = Object.keys(guardRecords).map(id => {
+    return Object.assign({}, { id }, guardRecords[id])
+  })
+  .reduce((max, guard) => {
+    if (!max) return guard
+    if (guard.mostTimesFallenAsleep > max.mostTimesFallenAsleep) return guard
+    return max
+  }, null)
+  // Answer
+  console.log('Part 2:', maxGuard.minOfHourMostSlept * parseInt(maxGuard.id))
+})(eventData)
