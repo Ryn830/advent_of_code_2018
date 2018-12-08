@@ -32,7 +32,34 @@
   What is the size of the region containing all locations which have a total distance to all given coordinates of less than 10000?
   */
 
-const { mdis } = require('./part1').utils
-module.exports = function () {
+const {
+  calculateMaximums,
+  createGrid,
+  mdis,
+  shiftCoords,
+} = require('./part1').utils
 
+module.exports = function (coords, distLimit) {
+  const [w, h] = calculateMaximums(coords)
+  const grid = createGrid(w, h)
+
+  for (let y = 0; y < grid.length; y++) {
+    for (let x = 0; x < grid[y].length; x++) {
+      grid[y][x] = sumMdis(coords, [x, y])
+    }
+  }
+
+  return grid.map(row => {
+    return row.filter(value => value < distLimit).length
+  })
+  .reduce((total, locations) => total + locations)
+}
+
+function sumMdis (array, location) {
+  return array.map(coord => {
+    return mdis(location, coord)
+  })
+  .reduce((sum, dist) => {
+    return sum + dist
+  }, 0)
 }

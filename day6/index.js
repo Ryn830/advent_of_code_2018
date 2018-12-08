@@ -7,5 +7,5 @@ module.exports.p1 = function () {
 }
 
 module.exports.p2 = function () {
-  console.log("Part 2:", p2(data))
+  console.log("Part 2:", p2(data, 10000))
 }
