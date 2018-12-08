@@ -50,15 +50,25 @@
   */
 module.exports = function (coords) {
   const [w, h] = calculateMaximums(coords)
-  const firstRun = findAreas(w, h, coords)
+  const grid = createGrid(w, h)
+  const firstRun = findAreas(grid, coords)
 
   const translated = shiftCoords(coords, 10)
   const [w2, h2] = calculateMaximums(translated)
-  const secondRun = findAreas(Math.floor(w2 * 1.5), Math.floor(h2 * 1.5), translated)
+  const grid2 = createGrid(Math.floor(w2 * 1.5), Math.floor(h2 + 1.5))
+  const secondRun = findAreas(grid2, translated)
 
   const finiteAreas = firstRun.filter(area => secondRun.includes(area))
   const max = Math.max(...finiteAreas)
   return max
+}
+
+module.exports.utils = {
+  calculateMaximums,
+  createGrid,
+  findAreas,
+  mdis,
+  shiftCoords,
 }
 
 function shiftCoords (coords, shiftFactor) {
@@ -73,10 +83,15 @@ function calculateMaximums (coords) {
   return [w, h]
 }
 
-function findAreas (maxX, maxY, coords) {
-  let grid = new Array(maxY).fill(null).map(r => new Array(maxX).fill(null))
-  for (let y = 0; y < maxY; y++) {
-    for (let x = 0; x < maxX; x++) {
+function createGrid (w, h) {
+  return new Array(h).fill(null).map(r => {
+    return new Array(w).fill(null)
+  })
+}
+
+function findAreas (grid, coords) {
+  for (let y = 0; y < grid.length; y++) {
+    for (let x = 0; x < grid[y].length; x++) {
       // Needs to reduce the coords down to the closest point in coords
       let distances = coords.map(coord => mdis([x,y], coord))
       let min = Math.min(...distances)
@@ -113,11 +128,4 @@ function findAreas (maxX, maxY, coords) {
 // Manhattan distance formula for 2d
 function mdis ([x1,y1], [x2, y2]) {
   return Math.abs(x1 - x2) + Math.abs(y1 - y2)
-}
-
-module.exports.helpers = {
-  shiftCoords,
-  calculateMaximums,
-  findAreas,
-  mdis,
 }
