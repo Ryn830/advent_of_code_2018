@@ -1,32 +1,11 @@
 const data = require('./data')
+const part1 = require('./part1')
+const part2 = require('./part2')
 
-/**
- * Part 1
- */
-module.exports.part1 = () => {
-  const result = data.reduce((all, el) => {
-    return all + el
-  }, 0)
-  console.log(result)
+module.exports.p1 = function () {
+  return part1(data)
 }
 
-/**
- * Part 2
- */
-module.exports.part2 = () => {
-  let values = []
-  for (let i = 0; i < 150; i++) {
-    values = values.concat(data)
-  }
-  let index = {}
-  let count = 0
-  values.forEach(value => {
-    count += value
-    index[count] = index[count] || 0
-    index[count]++
-    if (index[count] === 2) {
-      console.log(count)
-      process.exit(0)
-    }
-  })
+module.exports.p2 = function () {
+  return part2(data)
 }

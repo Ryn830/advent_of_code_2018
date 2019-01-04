@@ -2,16 +2,26 @@
   "name": "advent_of_code",
   "version": "1.0.0",
   "description": "",
-  "main": "d1.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "./node_modules/mocha/bin/mocha ./day*/*.test.js",
+    "coverage": "nyc --reporter=lcovonly ./node_modules/mocha/bin/mocha ./day*/*.test.js",
+    "d1p1": "node -e \"console.log(require('./day1').p1())\"",
+    "d1p2": "node -e \"console.log(require('./day1').p2())\"",
     "d7p1": "node -e \"require('./day7').p1()\"",
-    "d7p2": "node -e \"require('./day7').p2()\""
+    "d7p2": "node -e \"require('./day7').p2()\"",
+    "d8p1": "node -e \"require('./day8').p1()\"",
+    "d8p2": "node -e \"require('./day8').p2()\""
   },
-  "author": "",
+  "author": "Ryan Yee",
   "license": "ISC",
   "dependencies": {
-    "moment": "^2.22.2",
-    "node-inspect": "^1.11.5"
+    "moment": "^2.22.2"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "codecov": "^3.1.0",
+    "mocha": "^5.2.0",
+    "nyc": "^13.1.0",
+    "sinon": "^7.2.2"
   }
 }
