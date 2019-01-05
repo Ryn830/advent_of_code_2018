@@ -4,8 +4,8 @@
   "description": "",
   "scripts": {
     "test": "./node_modules/mocha/bin/mocha ./day*/*.test.js",
-    "local-coverage": "nyc --reporter=html mocha ./day*/*.test.js",
-    "coverage": "nyc --reporter=lcovonly ./node_modules/mocha/bin/mocha ./day*/*.test.js",
+    "local-coverage": "nyc --reporter=html --all mocha ./day*/*.test.js",
+    "coverage": "nyc --reporter=lcovonly --all ./node_modules/mocha/bin/mocha ./day*/*.test.js",
     "d1p1": "node -e \"console.log(require('./day1').p1())\"",
     "d1p2": "node -e \"console.log(require('./day1').p2())\"",
     "d2p1": "node -e \"console.log(require('./day2').p1())\"",
