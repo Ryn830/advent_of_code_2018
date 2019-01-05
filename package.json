@@ -4,9 +4,12 @@
   "description": "",
   "scripts": {
     "test": "./node_modules/mocha/bin/mocha ./day*/*.test.js",
+    "local-coverage": "nyc --reporter=html mocha ./day*/*.test.js",
     "coverage": "nyc --reporter=lcovonly ./node_modules/mocha/bin/mocha ./day*/*.test.js",
     "d1p1": "node -e \"console.log(require('./day1').p1())\"",
     "d1p2": "node -e \"console.log(require('./day1').p2())\"",
+    "d2p1": "node -e \"console.log(require('./day2').p1())\"",
+    "d2p2": "node -e \"console.log(require('./day2').p2())\"",
     "d7p1": "node -e \"require('./day7').p1()\"",
     "d7p2": "node -e \"require('./day7').p2()\"",
     "d8p1": "node -e \"require('./day8').p1()\"",
