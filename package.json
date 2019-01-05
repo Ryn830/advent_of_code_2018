@@ -10,6 +10,8 @@
     "d1p2": "node -e \"console.log(require('./day1').p2())\"",
     "d2p1": "node -e \"console.log(require('./day2').p1())\"",
     "d2p2": "node -e \"console.log(require('./day2').p2())\"",
+    "d3p1": "node -e \"console.log(require('./day3').p1())\"",
+    "d3p2": "node -e \"console.log(require('./day3').p2())\"",
     "d7p1": "node -e \"require('./day7').p1()\"",
     "d7p2": "node -e \"require('./day7').p2()\"",
     "d8p1": "node -e \"require('./day8').p1()\"",
